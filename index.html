@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
     <meta charset="UTF-8">
     <title>Rick and Morty info</title>
 </head>
 <body>
-    <div id="homeContainer">
-        <h1>Rick and Morty characters</h1>
-        <div id="allCharactersMainContainer">
-            <div id="allCharactersContainer"></div>
+    <div>
+        <section id="header">
+            <div>
+                <h1>Rick and Morty</h1>
+            </div>
+        </section>
+        <div id="homeContainer">
+            <h2>Choose your character</h2>
+            <div id="allCharactersMainContainer">
+                <div id="allCharactersContainer"></div>
+            </div>
+            <div id="paginator">
+                <button id="prevPage" disabled><</button>
+                <div id="pageIndexButtons"></div>
+                <button id="nextPage">></button>
+            </div>
         </div>
-        <span id="prevPage"><</span>
-        <div id="pageIndexButtons"></div>
-        <span id="nextPage">></span>
+        <div id="characterPage">
+            <div id="characterCardContainer"></div>
+        </div>
+        <div id="episodePage">
+            <div id="episodeInfoContainer"></div>
+        </div>
     </div>
-    <div id="characterPage">
-        <div id="characterCardContainer"></div>
-    </div>
-    <div id="episodePage">
-        <div id="episodeInfoContainer"></div>
-    </div>
-    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/3.9.0/less.min.js" ></script>
 </body>
 </html>
