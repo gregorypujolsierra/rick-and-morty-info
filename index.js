@@ -131,6 +131,7 @@ function serveCharacterInfo() {
     let old_container = document.getElementById('characterContainer');
     let container = createNode('div');
     container.id = 'characterContainer';
+    container.className = 'modal-container';
     let inner_container = createNode('div'),
         card_container = createNode('div'),
         card_header = createNode('div'),
@@ -144,7 +145,7 @@ function serveCharacterInfo() {
         location = createNode('div'),
         episodes = createNode('div'),
         close = createNode('button');
-    inner_container.id = 'innerContainer';
+    inner_container.className = 'inner-container';
     card_container.className = 'card-container';
     card_header.className = 'card-header';
     card_info.className = 'card-info';
@@ -158,15 +159,22 @@ function serveCharacterInfo() {
     origin.innerHTML = 'ORIGIN:' + '<span>' + chr.origin.name + '</span>';
     location.innerHTML = 'LAST LOCATION:' + '<span>' + chr.location.name + '</span>';
     episodes.className = 'episodes';
-    episodes.innerHTML = '<h3>EPISODES</h3>';
+    episodes.innerHTML = '<h3>CHARACTER\'S EPISODES</h3>';
     chr.episode.map(function (link) {
-        var li = createNode('li');
+        var li = createNode('li'),
+            ep_name = createNode('span');
         let id = link.replace(API_URL + 'episode/', '');
         getApiData('episode/', id)
             .then(data => {
-                li.innerHTML = '(' + data.episode + ')' + '<span>' + data.name + '</span>';
+                ep_name.innerText = data.name;
+                ep_name.id = 'ep-span-' + data.id;
+                li.innerText = '(' + data.episode + ')';
                 li.id = 'ep-' + data.id;
-                li.onclick = () => selectEpisode(event);
+                li.onclick = () => {
+                    closeModal(main_container);
+                    selectEpisode(event);
+                };
+                append(li, ep_name);
                 append(episodes, li);
             })
             .catch(error => console.log(error));
@@ -189,6 +197,15 @@ function serveCharacterInfo() {
     append(container, close);
     main_container.replaceChild(container, old_container);
     main_container.style.display = "flex";
+    window.onclick = function(event) {
+        if (event.target === main_container) {
+            main_container.style.display = "none";
+        }
+    }
+}
+
+function closeModal(modal) {
+    modal.style.display = "none"
 }
 
 
@@ -212,31 +229,59 @@ function serveEpisodeInfo() {
     let old_container = document.getElementById('episodeInfoContainer');
     let container = createNode('div');
     container.id = 'episodeInfoContainer';
-    let name = createNode('h1'),
-        ep_number = createNode('h2'),
+    container.className = 'modal-container';
+    let inner_container = createNode('div'),
+        ep_info_container = createNode('div'),
+        name = createNode('h2'),
+        ep_number = createNode('h3'),
         air_date = createNode('span'),
-        characters = createNode('div');
+        characters_container = createNode('div'),
+        characters = createNode('div'),
+        close = createNode('button');
+    ep_info_container.className = 'ep-info-container';
+    inner_container.className = 'inner-container flex-column';
     name.innerText = ep.name;
     ep_number.innerText = ep.episode;
     air_date.innerText = 'Aired on ' + ep.air_date;
+    characters_container.id = 'episodeCharactersContainer';
+    characters_container.innerHTML = '<h3>CHARACTERS APPEARING IN THIS EPISODE</h3>';
+    characters.id = 'episodeCharacters';
     ep.characters.map(link => {
-        var chr_image = createNode('img'),
+        var chr_container = createNode('div'),
+            chr_image = createNode('img'),
             chr_name = createNode('span');
-        let id = link.replace(API_URL + 'character/', '');
+        let id = getOnlyNumbers(link);
         getApiData('character/', id)
             .then(data => {
                 chr_image.src = data.image;
                 chr_image.id = 'ep-ch' + data.id;
-                chr_image.onclick = () => selectCharacter(event);
+                chr_image.onclick = () => {
+                    closeModal(main_container);
+                    selectCharacter(event)
+                };
                 chr_name.innerText = data.name;
-                append(characters, chr_image);
-                append(characters, chr_name);
+                append(chr_container, chr_image);
+                append(chr_container, chr_name);
+                append(characters, chr_container);
             })
             .catch(error => console.log(error));
     });
-    append(container, name);
-    append(container, ep_number);
-    append(container, air_date);
-    append(container, characters);
+    close.innerText = 'X';
+    close.className = 'close-modal';
+    close.onclick = () => {main_container.style.display = "none"};
+    append(ep_info_container, name);
+    append(ep_info_container, ep_number);
+    append(ep_info_container, air_date);
+    append(inner_container, ep_info_container);
+    append(characters_container, characters);
+    append(inner_container, characters_container);
+    append(container, inner_container);
+    append(container, close);
     main_container.replaceChild(container, old_container);
+    main_container.style.display = "flex";
+    window.onclick = function(event) {
+        if (event.target === main_container) {
+            main_container.style.display = "none";
+        }
+    }
 }

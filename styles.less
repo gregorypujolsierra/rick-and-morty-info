@@ -19,10 +19,25 @@
   flex-direction: row;
 }
 
+#card-image-element(@img_size: 100%) {
+  width: @img_size;
+  #img;
+  border-radius: 5px;
+}
+
 #img() {
   height: auto;
   object-fit: cover;
   cursor: pointer;
+}
+
+#grid(@padding: 30px; @minmax: 250px; @gap: 30px) {
+  padding: 0 @padding @padding;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(@minmax, 1fr));
+  grid-gap: @gap;
+  flex-direction: row;
+  justify-content: center;
 }
 
 #card-container() {
@@ -82,24 +97,14 @@ h3 {
 
 #allCharactersContainer {
   @image_size: 65%;
-  @padding: 30px;
 
-  padding: 0 @padding @padding;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-gap: 30px;
-  flex-direction: row;
-  justify-content: center;
+  #grid();
 
   div {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    #flex_center_column;
 
     img {
-      width: @image_size;
-      #img;
-      border-radius: 5px;
+      #card-image-element(@image_size);
     }
     span {
       bottom: 0;
@@ -143,7 +148,7 @@ h3 {
   }
 }
 
-#characterPage {
+.modal-page {
   display: none;
   position: fixed;
   z-index: 1;
@@ -158,13 +163,13 @@ h3 {
   justify-content: center;
 }
 
-#characterContainer {
+.modal-container {
   display: flex;
   flex-direction: row;
   width: 90%;
 }
 
-#innerContainer {
+.inner-container {
   padding: 35px;
   width: 100%;
   height: 800px;
@@ -183,11 +188,8 @@ h3 {
 
 .card-header {
   #flex_center_column;
-
   img {
-    width: 100%;
-    #img;
-    border-radius: 6px;
+    #card-image-element();
   }
 }
 
@@ -220,6 +222,7 @@ h3 {
 
   li {
     border-bottom: antiquewhite solid 1px;
+    cursor: pointer;
     #flex_center_row;
 
     &:hover {
@@ -230,6 +233,44 @@ h3 {
       margin-left: 6px;
       font-size: 1.8vmin;
     }
+  }
+}
+
+.flex-column {
+  align-items: normal;
+  flex-direction: column;
+  justify-content: normal;
+}
+
+#episodeCharactersContainer {
+  h3 {
+    padding: 50px 0   30px;
+  }
+}
+
+#episodeCharacters {
+  #grid(0; 150px; 10px);
+
+  div {
+    #flex_center_column;
+
+    img {
+      #card-image-element(50%);
+    }
+
+    span {
+      padding: 5px 0;
+      font-size: 1.7vmin;
+      text-align: center;
+    }
+  }
+}
+
+.ep-info-container {
+  align-self: flex-start;
+
+  h3 {
+    text-align: left;
   }
 }
 
