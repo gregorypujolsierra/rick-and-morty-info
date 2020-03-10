@@ -3,11 +3,20 @@ const API_URL = 'https://rickandmortyapi.com/api/';
 /*** HOME ***/
 
 var characters_data;
+var total_pages;
 var current_page_index = 1;
 
 function selectPage(event) {
-    current_page_index = getOnlyNumbers(event.target.id);
+    let old_button = document.getElementById('page-' + current_page_index);
+    old_button.className = old_button.className.replace(' current-page', '');
+    current_page_index = Number(getOnlyNumbers(event.target.id));
     getPageData();
+    let current_button = document.getElementById(event.target.id);
+    current_button.className += ' current-page';
+    let prev = document.getElementById('prevPage');
+    prev.disabled = current_page_index === 1;
+    let next = document.getElementById('nextPage');
+    next.disabled = current_page_index === total_pages;
 }
 
 function getPageData() {
@@ -17,10 +26,6 @@ function getPageData() {
         })
         .then(() => getCharacterItems())
         .catch(error => console.log(error));
-    setTimeout(() => {
-        },
-        100
-    );
 }
 
 function getApiData(url_complement, id) {
@@ -54,17 +59,36 @@ function getCharacterItems() {
 }
 
 function createIndexButtons() {
-    let total_pages = characters_data.info.pages;
+    total_pages = characters_data.info.pages;
     let current_page = current_page_index;
     const div = document.getElementById('pageIndexButtons');
     for (let i = 1; i <= total_pages; i++) {
         let button = createNode('button');
-        button.id = 'page-' + (i < 10 ? '0' : '') + i;
+        button.id = 'page-' + i;
         button.className = 'page-index' + (i === current_page ? ' current-page' : '');
         button.onclick = () => selectPage(event);
         button.innerText = i;
         append(div, button);
     }
+    prevNextPageButtons();
+}
+
+function prevNextPageButtons() {
+    let prev = document.getElementById('prevPage');
+    let next = document.getElementById('nextPage');
+    prev.onclick = () => {goToPrevNextPage(false)};
+    next.onclick = () => {goToPrevNextPage(true)};
+}
+
+function goToPrevNextPage(next) {
+    let id = current_page_index,
+        target = new Array('id'),
+        event = new Array('target');
+    next ? id += 1 : id -= 1;
+    target.id = id;
+    event.target = target;
+    event.target.id = 'page-' + id.toString();
+    selectPage(event);
 }
 
 
@@ -99,10 +123,6 @@ function selectCharacter(event) {
         })
         .then(() => serveCharacterInfo())
         .catch(error => console.log(error));
-    setTimeout(() => {
-        },
-        100
-    );
 }
 
 function serveCharacterInfo() {
@@ -154,17 +174,6 @@ function serveCharacterInfo() {
     main_container.replaceChild(container, old_container);
 }
 
-function getEpisodeData(link) {
-    return fetch(link)
-        .then(response => response.json())
-        .then(data => {
-            return data
-        })
-        .catch(error => {
-            console.log((error))
-        });
-}
-
 
 /*** EPISODE PAGE ***/
 
@@ -194,14 +203,17 @@ function serveEpisodeInfo() {
     ep_number.innerText = ep.episode;
     air_date.innerText = 'Aired on ' + ep.air_date;
     ep.characters.map(link => {
-        var chr_image = createNode('img');
+        var chr_image = createNode('img'),
+            chr_name = createNode('span');
         let id = link.replace(API_URL + 'character/', '');
         getApiData('character/', id)
             .then(data => {
                 chr_image.src = data.image;
                 chr_image.id = 'ep-ch' + data.id;
                 chr_image.onclick = () => selectCharacter(event);
+                chr_name.innerText = data.name;
                 append(characters, chr_image);
+                append(characters, chr_name);
             })
             .catch(error => console.log(error));
     });
