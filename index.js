@@ -128,10 +128,12 @@ function selectCharacter(event) {
 function serveCharacterInfo() {
     let chr = selected_character;
     let main_container = document.getElementById('characterPage');
-    let old_container = document.getElementById('characterCardContainer');
+    let old_container = document.getElementById('characterContainer');
     let container = createNode('div');
-    container.id = 'characterCardContainer';
-    let card_header = createNode('div'),
+    container.id = 'characterContainer';
+    let inner_container = createNode('div'),
+        card_container = createNode('div'),
+        card_header = createNode('div'),
         card_info = createNode('div'),
         image = createNode('img'),
         name = createNode('h2'),
@@ -140,27 +142,38 @@ function serveCharacterInfo() {
         gender = createNode('div'),
         origin = createNode('div'),
         location = createNode('div'),
-        episodes = createNode('div');
+        episodes = createNode('div'),
+        close = createNode('button');
+    inner_container.id = 'innerContainer';
+    card_container.className = 'card-container';
+    card_header.className = 'card-header';
+    card_info.className = 'card-info';
     image.src = chr.image;
     name.innerText = chr.name;
-    status.innerText = 'STATUS: ' + chr.status;
-    specie.innerText = 'SPECIE: ' + chr.species + (chr.type ? ', ' + chr.type : '');
-    gender.innerText = 'GENDER: ' + chr.gender;
-    origin.innerText = 'ORIGIN: ' + chr.origin.name;
-    location.innerText = 'LAST LOCATION: ' + chr.location.name;
-    episodes.innerText = 'EPISODES';
+    name.className = 'character-name';
+    status.className = specie.className = gender.className = origin.className = location.className = 'card-info-props';
+    status.innerHTML = 'STATUS:' + '<span>' + chr.status + '</span>';
+    specie.innerHTML = 'SPECIE:' + '<span>' + chr.species + (chr.type ? ', ' + chr.type : '') + '</span>';
+    gender.innerHTML = 'GENDER:' + '<span>' + chr.gender + '</span>';
+    origin.innerHTML = 'ORIGIN:' + '<span>' + chr.origin.name + '</span>';
+    location.innerHTML = 'LAST LOCATION:' + '<span>' + chr.location.name + '</span>';
+    episodes.className = 'episodes';
+    episodes.innerHTML = '<h3>EPISODES</h3>';
     chr.episode.map(function (link) {
         var li = createNode('li');
         let id = link.replace(API_URL + 'episode/', '');
         getApiData('episode/', id)
             .then(data => {
-                li.innerText = data.name + ' (' + data.episode + ')';
+                li.innerHTML = '(' + data.episode + ')' + '<span>' + data.name + '</span>';
                 li.id = 'ep-' + data.id;
                 li.onclick = () => selectEpisode(event);
                 append(episodes, li);
             })
             .catch(error => console.log(error));
     });
+    close.innerText = 'X';
+    close.className = 'close-modal';
+    close.onclick = () => {main_container.style.display = "none"};
     append(card_header, image);
     append(card_header, name);
     append(card_info, status);
@@ -168,10 +181,14 @@ function serveCharacterInfo() {
     append(card_info, gender);
     append(card_info, origin);
     append(card_info, location);
-    append(card_info, episodes);
-    append(container, card_header);
-    append(container, card_info);
+    append(card_container, card_header);
+    append(card_container, card_info);
+    append(inner_container, card_container);
+    append(inner_container, episodes);
+    append(container, inner_container);
+    append(container, close);
     main_container.replaceChild(container, old_container);
+    main_container.style.display = "flex";
 }
 
 
